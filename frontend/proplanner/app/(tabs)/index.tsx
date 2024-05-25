@@ -1,14 +1,13 @@
-import { StyleSheet,View, Text, TextInput, Button } from 'react-native';
+import { StyleSheet,View, Text, TextInput, Button, TouchableOpacity } from 'react-native';
 import { GlobalLayout } from "../../components/Layout";
 import React, { useState } from 'react';
 import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
 
 export default function HomeScreen() {
-  const [squareDoNow, setSquareDoNow] = useState('Do this now');
-  const [squarePlan, setSquarePlan] = useState('Do this later');
-  const [squareDelegate, setSquareDelegate] = useState('Delegate this');
-  const [squareDelete, setSquareDelete] = useState('Thankless tasks');
+  const [squareDoNow, setSquareDoNow] = useState('Do');
+  const [squarePlan, setSquarePlan] = useState('Schedule');
+  const [squareDelegate, setSquareDelegate] = useState('Delegate');
+  const [squareDelete, setSquareDelete] = useState('Delete');
   const [editing, setEditing] = useState(false);
 
   
@@ -24,15 +23,7 @@ export default function HomeScreen() {
   return (
     <GlobalLayout >
 
-      <ThemedText type="title" style={styles.intro}>Plan your life!</ThemedText>
-      <ThemedText type="subtitle" style={styles.intro}>Urgent and Important:</ThemedText>
-      <ThemedText type="default" style={styles.intro}>Tasks that you should do it NOW!!</ThemedText>
-      <ThemedText type="subtitle" style={styles.intro}>Not Urgent but Important:</ThemedText>
-      <ThemedText type="default" style={styles.intro}>Tasks that can wait, but please keep them in mind!</ThemedText>
-      <ThemedText type="subtitle" style={styles.intro}>Urgent, but not Important:</ThemedText>
-      <ThemedText type="default" style={styles.intro}>Tasks that must be done but won't take much effort.</ThemedText>
-      <ThemedText type="subtitle" style={styles.intro}>Not Urgent and not Important:</ThemedText>
-      <ThemedText type="default" style={styles.intro}>Distraction and unnecessary tasks.</ThemedText>
+      <ThemedText type="title" style={styles.pageTitle}>Plan your life!</ThemedText>
 
       <View style={styles.container}>
       {/* Title row */}
@@ -53,7 +44,7 @@ export default function HomeScreen() {
         </View>
         
         {/* Square cells */}
-        <View style={styles.cell}>
+        <View style={[styles.cell, styles.doCell]}>
           <TextInput
             style={styles.input}
             placeholder={squareDoNow}
@@ -63,7 +54,7 @@ export default function HomeScreen() {
             editable={editing ? true : false}
           />
         </View>
-        <View style={styles.cell}>
+        <View style={[styles.cell, styles.scheduleCell]}>
           <TextInput
             style={styles.input}
             placeholder={squarePlan}
@@ -80,7 +71,7 @@ export default function HomeScreen() {
         <View style={[styles.cell, styles.verticalTitleCell]}>
           <Text style={[styles.title, styles.verticalTitle]}>Not important</Text>
         </View>
-        <View style={styles.cell}>
+        <View style={[styles.cell, styles.delegateCell]}>
           <TextInput
             style={styles.input}
             placeholder={squareDelegate}
@@ -90,7 +81,7 @@ export default function HomeScreen() {
             editable={editing ? true : false}
           />
         </View>
-        <View style={styles.cell}>
+        <View style={[styles.cell, styles.deleteCell]}>
           <TextInput
             style={styles.input}
             placeholder={squareDelete}
@@ -103,18 +94,19 @@ export default function HomeScreen() {
       </View>
       </View>
 
-      <Button title={editing ? "Save" : "Edit"} onPress={editing ? handleSave: handleToggleEdit} />
+      <TouchableOpacity style={styles.button} onPress={editing ? handleSave: handleToggleEdit}><Text>{editing ? "Save" : "Edit"}</Text></TouchableOpacity>
+
+
     </GlobalLayout>
     
   );
 }
 
 const styles = StyleSheet.create({
-  intro: {
-    marginLeft: 10
+  pageTitle: {
+    marginLeft: 20
   },
   container: {
-    // flex: 1,
     marginTop: 10,
     justifyContent: 'center',
     alignItems: 'center',
@@ -125,8 +117,7 @@ const styles = StyleSheet.create({
   },
   cell: {
     width: 160,
-    height: 160,
-    backgroundColor: 'peachpuff',
+    height: 240,
     justifyContent: 'center',
     alignItems: 'center',
     margin: 5,
@@ -141,12 +132,12 @@ const styles = StyleSheet.create({
     marginLeft: 20
   },
   verticalTitleCell: {
-    width: 10, 
-    height: 160,
+    width: '1%', 
+    // textAlign: 'center',
+    // justifyContent: 'center',
     backgroundColor: 'transparent',
   },
   horizontalTitleCell: {
-    width: 160, 
     height: 20,
     textAlign: 'center',
     backgroundColor: 'transparent',
@@ -158,10 +149,31 @@ const styles = StyleSheet.create({
   },
   verticalTitle: {
     transform: [{ rotate: '-90deg' }],
-    width: 150,
-    textAlign: 'center'
+    width: 130,
+    textAlign: 'center',
   },
   horizontalTitle: {
   },
+  
+  button: {
+    alignItems: 'center',
+    backgroundColor: '#DDDDDD',
+    padding: 10,
+    marginHorizontal: 20,
+    marginTop: 10,
+    marginLeft: 35
+  },
 
+  doCell: {
+    backgroundColor: 'mediumseagreen'
+  },
+  scheduleCell: {
+    backgroundColor: 'sandybrown'
+  },
+  delegateCell: {
+    backgroundColor: 'skyblue'
+  },
+  deleteCell: {
+    backgroundColor: 'lightcoral'
+  }
 });
