@@ -1,13 +1,12 @@
-const mysql = require("mysql2");
 
-const connection = mysql
-  .createConnection({
-    host: "localhost",
-    user: "root",
-    password: "8429",
-    database: "IFN554Hoteldb",
-    port: 3316
-  })
-  .promise();
+module.exports = {
+  client: "mysql2",
+  connection: {
+    host: process.env.DB_HOST,
+    database: process.env.DB_NAME,
+    user: process.env.DB_USER,
+    password: process.env.DB_PWS,
+    port: process.env.DB_PORT
 
-module.exports = connection;
+  },
+};
