@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+require('dotenv').config();
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const authorise = require('../auth')
@@ -26,7 +27,7 @@ router.post("/register", async(req, res) => {
 
     const saltRounds = 10;
     const hash = bcrypt.hashSync(password, saltRounds);
-    req.db.from("users").insert({ email, hash });
+    await req.db.from("users").insert({ email, hash });
 
     res.status(201).json({ error: false, message: "user created" });
 }) 
@@ -53,7 +54,7 @@ router.post("/login", async (req, res) => {
   const user = queryUsers[0];
   const match = await bcrypt.compare(password, user.hash);
   if (!match) {
-    return res.status(401).json({error:true, message: "password do not match"})
+    return res.status(401).json({error:true, message: "password does not match"})
   }
     
   const expires_in = 60*60*24;
