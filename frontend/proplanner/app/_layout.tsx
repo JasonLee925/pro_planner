@@ -12,6 +12,8 @@ import Entypo from "@expo/vector-icons/Entypo";
 import { LoginScreen } from "./login"
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useColorScheme } from "@/hooks/useColorScheme";
+import Toast from 'react-native-toast-message';
+import {verifyToken} from '../api/user'
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -33,9 +35,10 @@ export default function RootLayout() {
         setAppIsReady(true);
 
 
-        // parse token from the async storage (for auto login)
-        const value = await AsyncStorage.getItem('user-token');
-        setIsLoggedIn(value !== null ? true : false)
+        // parse token from the async storage (for auto login) && check token's validality
+        const token = await AsyncStorage.getItem('user-token');
+        const result = await verifyToken(token)
+        setIsLoggedIn(!result.error)
       }
     }
 
@@ -62,10 +65,10 @@ export default function RootLayout() {
       </Stack>
       ): (
       <LoginScreen onLogin={()=>{
-        console.log("login")
         setIsLoggedIn(true)
       }}></LoginScreen>
       )}
+      <Toast />
     </ThemeProvider>
   );
 }
