@@ -1,4 +1,16 @@
 
+export async function verifyToken(userToken) {
+  const auth = `Bearer ${userToken}`
+  const url = `${process.env.EXPO_PUBLIC_BASE_URL}/users/varifyToken`;
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      Authorization: auth,
+    },
+  })
+  return response.json();
+}
+
 export async function registerUser(email, password) {
     const json = {
       email: email,
