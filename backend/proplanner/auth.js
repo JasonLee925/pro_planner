@@ -19,6 +19,7 @@ const authorise = (req, res, next) => {
       if (decoded.exp < Date.now()) {
         res.json({error: true, message: "expired token"})
       } 
+      req.token = decoded;
       next();
     } catch(err) {
       res.json({error: true, message: "token is not valid: ", err})

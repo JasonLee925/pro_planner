@@ -45,7 +45,7 @@ router.post("/login", async (req, res) => {
     return;
   }
 
-  const queryUsers = await req.db.from("users").select("email", "hash").where("email", "=", email)
+  const queryUsers = await req.db.from("users").select("*").where("email", "=", email)
 
   if(queryUsers.length == 0){
     return res.status(401).json({error: false, message:"user does not exist"});
@@ -58,16 +58,16 @@ router.post("/login", async (req, res) => {
   }
     
   const expires_in = 60*60*24;
-
+  const userId = user.id;
   const exp = Date.now() + expires_in * 1000;
-  const token = jwt.sign({email, exp}, secretKey); 
+  const token = jwt.sign({userId, email, exp}, secretKey); 
 
   res.json({token_type: "Bearer", token, expires_in})
 })
 
  
-router.post("/city", authorise, (req, res) => {
-  res.json({soSomething: true})
+router.post("/varifyToken", authorise, (req, res) => {
+  res.json({valid: true})
 })
 
 module.exports = router;
