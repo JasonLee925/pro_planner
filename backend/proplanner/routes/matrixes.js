@@ -10,10 +10,10 @@ router.get("/test", authorise, (req, res) => {
 /* Search matrixes. This is will NOT return `details`. */
 router.get("/search", authorise, async (req, res) => {
     const limit = req.query.limit ? req.query.limit : 10;
-    const archived = req.query.archived == 1
+    const archived = req.query.archived 
     
     try {
-        const result = await req.db.from("matrixes").select().where("archive", "=", archived ? 1 : 0).orderBy('create_time', 'desc').limit(limit);
+        const result = await req.db.from("matrixes").select().where("archive", "<=", archived ).orderBy('create_time', 'desc').limit(limit);
         const matrix = result
         res.json({ matrix })
     } catch(error) {
