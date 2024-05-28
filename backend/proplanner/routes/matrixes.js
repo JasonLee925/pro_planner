@@ -2,18 +2,20 @@ var express = require("express");
 var router = express.Router();
 const authorise = require("../auth");
 
-/* Test. */
-router.get("/test", authorise, (req, res) => {
-    res.json({ successful: req.token });
-});
-
 /* Search matrixes. This is will NOT return `details`. */
 router.get("/search", authorise, async (req, res) => {
     const limit = req.query.limit ? req.query.limit : 10;
     const archived = req.query.archived 
-    
+    const user_id = req.token.userId;
+    if (user_id === null) {
+        return res.status(400).json({error: true, message: "invalid token: user id not found"})
+    }
+
     try {
-        const result = await req.db.from("matrixes").select().where("archive", "<=", archived ).orderBy('create_time', 'desc').limit(limit);
+        const result = await req.db.from("matrixes").select()
+                                .where("archive", "<=", archived )
+                                .andWhere("user_id", "=", user_id)
+                                .orderBy('create_time', 'desc').limit(limit);
         const matrix = result
         res.json({ matrix })
     } catch(error) {
@@ -24,8 +26,12 @@ router.get("/search", authorise, async (req, res) => {
 /* Get the latest matrix. */
 router.get("/latest", authorise, async (req, res) => {
     const isDetails = req.query.details == 1;
+    const user_id = req.token.userId;
+    if (user_id === null) {
+        return res.status(400).json({error: true, message: "invalid token: user id not found"})
+    }
 
-    let result = await req.db.from("matrixes").select().orderBy('create_time', 'desc').limit(1)
+    let result = await req.db.from("matrixes").select().andWhere("user_id", "=", user_id).orderBy('create_time', 'desc').limit(1)
     const id = result[0].id
     const matrix = result[0]
 
@@ -58,13 +64,13 @@ router.get("/:id", authorise, async (req, res) => {
 /* Create a matrix. */
 router.post("/", authorise, async (req, res) => {
     const tx = await req.db.transaction();
+    const user_id = req.token.userId;
+    if (user_id === null) {
+        return res.status(400).json({error: true, message: "invalid token: user id not found"})
+    }
 
     try {
         const create_time = new Date();
-        const user_id = req.token.userId;
-        if (user_id === null) {
-            return res.status(400).json({error: true, message: "invalid token: user id not found"})
-        }
         const result = await tx("matrixes").insert({ create_time, user_id });
         const matrixId = result[0]
 
