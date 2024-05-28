@@ -9,28 +9,6 @@ import { searchMatrixes, getlatestMatrix, getMatrixById, createMatrix, updateMat
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function HomeScreen() {
-  // const data = [
-  //   { label: "Current", value: 10 },
-  //   { label: "Item 2", value: 1 },
-  //   { label: "Item 3", value: 2 },
-  //   { label: "Item 4", value: 3 },
-  //   { label: "Item 5", value: 4 },
-  //   { label: "Item 6", value: 5 },
-  //   { label: "Item 7", value: 6 },
-  //   { label: "Item 8", value: 7 },
-  // ];
-
-  // const dataDetails = [
-  //   {
-  //     id: 10,
-  //     do: "dooo",
-  //     schedule: "scheduleeeee",
-  //     delegate: "delegateeee",
-  //     delete: "deleteeee",
-  //   },
-  //   { id: 1, do: "@", schedule: "@", delegate: "@", delete: "@" },
-  //   { id: 2, do: "-", schedule: "-", delegate: "-", delete: "-" },
-  // ];
 
   const [matrix, setMatrix] = useState(null);
   const [matrixes, setMatrixes] = useState([]); // data

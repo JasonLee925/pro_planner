@@ -5,7 +5,7 @@ export async function searchMatrixes(settings=null) {
     const userToken = await AsyncStorage.getItem('user-token');
     const auth = `Bearer ${userToken}`
 
-    let params = {limit: 10, archived: 0} // default
+    let params = {limit: 5, archived: 0} // default
     if (settings) {
         params = { limit: settings.limit, archived: settings.archived }
     }

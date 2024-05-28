@@ -1,22 +1,27 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Switch, Text, FlatList, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Switch, Text, FlatList, TouchableOpacity, Alert } from 'react-native';
 import { Dropdown } from "react-native-element-dropdown";
+import Toast from "react-native-toast-message";
 
 import { ThemedText } from "@/components/ThemedText"
 import { GlobalLayout } from "../../components/Layout"
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import { deleteUser } from "@/api/user"
+import {useLoggedInState} from "@/context/loggedInContext"
 
 export default function TabSettingScreen() {
+  const {isLoggedIn, setIsLoggedIn} = useLoggedInState();
   const [isMatrixArchived, setMatrixArchived] = useState(false);
-  const [selectedMatrisLimit, setSelectedMatrisLimit] = useState(10); 
+  const [selectedMatrisLimit, setSelectedMatrisLimit] = useState(5); 
 
   useEffect(()=> {
     (async ()=> {
       const json = await AsyncStorage.getItem('matrix-settings');
-      const settings = json != null ? JSON.parse(json) : null;    
-      setMatrixArchived(settings.archived > 0 ? true:false);
-      setSelectedMatrisLimit(settings.limit);
+      const settings = json != null ? JSON.parse(json) : null;  
+      if (settings) {   
+        setMatrixArchived(settings.archived ? true:false);
+        setSelectedMatrisLimit(settings.limit);
+      }
     })()
   }, [])
 
@@ -29,7 +34,7 @@ export default function TabSettingScreen() {
       }
   
       let json = JSON.stringify(settings);
-      AsyncStorage.setItem('matrix-settings', json);      
+      await AsyncStorage.setItem('matrix-settings', json);      
     })()
   }, [isMatrixArchived, selectedMatrisLimit])
 
@@ -97,13 +102,42 @@ export default function TabSettingScreen() {
   };
 
   const handleLogout = () => {
-    // Handle logout logic here
-    alert('Logout button pressed');
+    Alert.alert('Logout', 'Are you sure you want to log out?', [
+      {
+        text: 'Cancel',
+        onPress: () => {},
+        style: 'cancel',
+      },
+      {text: 'OK', onPress: () => {
+        setIsLoggedIn(false) // logout
+        AsyncStorage.removeItem('matrix-settings');      
+        AsyncStorage.removeItem('user-token');
+      }},
+    ]);
   };
 
   const handleDeleteAccount = () => {
-    // Handle delete account logic here
-    alert('Delete Account button pressed');
+    Alert.alert('Confirm Deletion', 'This action will result in losing all data.', [
+      {
+        text: 'Cancel',
+        onPress: () => Toast.show({
+            type: "info",
+            text1: "Scare me there 😮‍💨",
+            autoHide: true,
+            visibilityTime: 1500,
+            position: "bottom",
+        }),
+        style: 'cancel',
+      },
+      {text: 'OK', onPress: () => {
+        setIsLoggedIn(false) // logout
+        deleteUser()
+
+        AsyncStorage.removeItem('matrix-settings');      
+        AsyncStorage.removeItem('user-token');
+      }},
+    
+    ]);
   };
 
   return (
