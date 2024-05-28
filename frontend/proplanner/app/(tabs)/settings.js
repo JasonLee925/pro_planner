@@ -1,102 +1,178 @@
-import Ionicons from '@expo/vector-icons/Ionicons';
-import { StyleSheet, Image, Platform } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, View, Switch, Text, FlatList, TouchableOpacity } from 'react-native';
+import { Dropdown } from "react-native-element-dropdown";
 
-import { Collapsible } from '@/components/Collapsible';
-import { ExternalLink } from '@/components/ExternalLink';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+import { ThemedText } from "@/components/ThemedText"
+import { GlobalLayout } from "../../components/Layout"
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function TabTwoScreen() {
+
+export default function TabSettingScreen() {
+  const [isMatrixArchived, setMatrixArchived] = useState(false);
+  const [selectedMatrisLimit, setSelectedMatrisLimit] = useState(10); 
+
+  useEffect(()=> {
+    (async ()=> {
+      const json = await AsyncStorage.getItem('matrix-settings');
+      const settings = json != null ? JSON.parse(json) : null;    
+      setMatrixArchived(settings.archived > 0 ? true:false);
+      setSelectedMatrisLimit(settings.limit);
+    })()
+  }, [])
+
+  useEffect(()=> {
+    (async ()=> {
+      const settings = {
+        changed: 1,
+        archived: isMatrixArchived ? 1: 0,
+        limit: selectedMatrisLimit
+      }
+  
+      let json = JSON.stringify(settings);
+      AsyncStorage.setItem('matrix-settings', json);      
+    })()
+  }, [isMatrixArchived, selectedMatrisLimit])
+
+  const toggleSwitch = () => setMatrixArchived(previousState => !previousState);
+
+  const settingsData = [
+    {
+      id: '1',
+      type: 'toggle',
+      title: 'Show Archeved Matrixes',
+      value: isMatrixArchived,
+      onValueChange: toggleSwitch,
+    },
+    {
+      id: '2',
+      type: 'dropdown',
+      title: 'Number of Showing Matrixes',
+      value: selectedMatrisLimit,
+      onValueChange: (item) => {
+        setSelectedMatrisLimit(item.value)
+      },
+      options: [
+        { label: '5', value: 5 },
+        { label: '10', value: 10 },
+        { label: '15', value: 15 },
+        { label: '20', value: 20 },
+        { label: '30', value: 30 },
+        { label: '50', value: 50 },
+        { label: '75', value: 75 },
+        { label: '100', value: 100 }
+      ],
+    },
+  ];
+
+  const renderItem = ({ item }) => {
+    switch (item.type) {
+      case 'toggle':
+        return (
+          <View style={styles.itemContainer}>
+            <Text style={styles.itemTitle}>{item.title}</Text>
+            <Switch
+              value={item.value}
+              onValueChange={item.onValueChange}
+            />
+          </View>
+        );
+      case 'dropdown':
+        return (
+          <View style={styles.itemContainer}>
+            <Text style={styles.itemTitle}>{item.title}</Text>
+            <Dropdown
+              style={styles.dropdown}
+              data={item.options}
+              labelField="label"
+              valueField="value"
+              placeholder="Select number"
+              value={item.value}
+              onChange={item.onValueChange}
+            />
+          </View>
+        );
+      default:
+        return null;
+    }
+  };
+
+  const handleLogout = () => {
+    // Handle logout logic here
+    alert('Logout button pressed');
+  };
+
+  const handleDeleteAccount = () => {
+    // Handle delete account logic here
+    alert('Delete Account button pressed');
+  };
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
-      headerImage={<Ionicons size={310} name="code-slash" style={styles.headerImage} />}>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Explore</ThemedText>
-      </ThemedView>
-      <ThemedText>This app includes example code to help you get started.</ThemedText>
-      <Collapsible title="File-based routing">
-        <ThemedText>
-          This app has two screens:{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/explore.tsx</ThemedText>
-        </ThemedText>
-        <ThemedText>
-          The layout file in <ThemedText type="defaultSemiBold">app/(tabs)/_layout.tsx</ThemedText>{' '}
-          sets up the tab navigator.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/router/introduction">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Android, iOS, and web support">
-        <ThemedText>
-          You can open this project on Android, iOS, and the web. To open the web version, press{' '}
-          <ThemedText type="defaultSemiBold">w</ThemedText> in the terminal running this project.
-        </ThemedText>
-      </Collapsible>
-      <Collapsible title="Images">
-        <ThemedText>
-          For static images, you can use the <ThemedText type="defaultSemiBold">@2x</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">@3x</ThemedText> suffixes to provide files for
-          different screen densities
-        </ThemedText>
-        <Image source={require('@/assets/images/react-logo.png')} style={{ alignSelf: 'center' }} />
-        <ExternalLink href="https://reactnative.dev/docs/images">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Custom fonts">
-        <ThemedText>
-          Open <ThemedText type="defaultSemiBold">app/_layout.tsx</ThemedText> to see how to load{' '}
-          <ThemedText style={{ fontFamily: 'SpaceMono' }}>
-            custom fonts such as this one.
-          </ThemedText>
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/versions/latest/sdk/font">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Light and dark mode components">
-        <ThemedText>
-          This template has light and dark mode support. The{' '}
-          <ThemedText type="defaultSemiBold">useColorScheme()</ThemedText> hook lets you inspect
-          what the user's current color scheme is, and so you can adjust UI colors accordingly.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/develop/user-interface/color-themes/">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Animations">
-        <ThemedText>
-          This template includes an example of an animated component. The{' '}
-          <ThemedText type="defaultSemiBold">components/HelloWave.tsx</ThemedText> component uses
-          the powerful <ThemedText type="defaultSemiBold">react-native-reanimated</ThemedText> library
-          to create a waving hand animation.
-        </ThemedText>
-        {Platform.select({
-          ios: (
-            <ThemedText>
-              The <ThemedText type="defaultSemiBold">components/ParallaxScrollView.tsx</ThemedText>{' '}
-              component provides a parallax effect for the header image.
-            </ThemedText>
-          ),
-        })}
-      </Collapsible>
-    </ParallaxScrollView>
+    <GlobalLayout isScrollview={false} >
+      <View style={styles.container}>
+        <View style={styles.topContainer}>
+          <ThemedText type='title' >Settings ⚙️</ThemedText>
+          <FlatList
+            data={settingsData}
+            renderItem={renderItem}
+            keyExtractor={item => item.id}
+          />
+        </View>
+        <View style={styles.bottomContainer}>
+          <TouchableOpacity style={[styles.button, styles.buttonLogout]} onPress={handleLogout}>
+            <Text style={styles.buttonText}>Logout</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={[styles.button, styles.buttonDeleteAccount]} onPress={handleDeleteAccount}>
+            <Text style={styles.buttonText}>Delete Account</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </GlobalLayout>
   );
 }
 
+
 const styles = StyleSheet.create({
-  headerImage: {
-    color: '#808080',
-    bottom: -90,
-    left: -35,
-    position: 'absolute',
+  container: {
+    paddingHorizontal: 20,
   },
-  titleContainer: {
+  topContainer: {
+  },
+  bottomContainer: {
+    marginTop: 20,
+  },
+  itemContainer: {
     flexDirection: 'row',
-    gap: 8,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+  },
+  itemTitle: {
+    fontSize: 18,
+  },
+  dropdown: {
+    width: 80,
+    height: 40,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 5,
+    paddingHorizontal: 8,
+  },
+  button: {
+    padding: 15,
+    borderRadius: 5,
+    alignItems: 'center',
+    marginVertical: 5,
+  },
+  buttonLogout: {
+    backgroundColor: 'grey',
+  },
+  buttonDeleteAccount: {
+    backgroundColor: 'red',
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
   },
 });

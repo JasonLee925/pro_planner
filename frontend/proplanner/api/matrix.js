@@ -1,11 +1,14 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
-export async function searchMatrixes(limit=10, archived=0) {
+export async function searchMatrixes(settings=null) {
     const userToken = await AsyncStorage.getItem('user-token');
     const auth = `Bearer ${userToken}`
 
-    const params = {limit, archived}
+    let params = {limit: 10, archived: 0} // default
+    if (settings) {
+        params = { limit: settings.limit, archived: settings.archived }
+    }
     const queryString = new URLSearchParams(params).toString();
 
     const url = `${process.env.EXPO_PUBLIC_BASE_URL}/matrixes/search?${queryString}`;
