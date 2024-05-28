@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export async function verifyToken(userToken) {
   const auth = `Bearer ${userToken}`
@@ -8,7 +9,7 @@ export async function verifyToken(userToken) {
       Authorization: auth,
     },
   })
-  return response.json();
+  return await response.json();
 }
 
 export async function registerUser(email, password) {
@@ -25,7 +26,7 @@ export async function registerUser(email, password) {
       body: JSON.stringify(json),
     })
     
-    return response.json();
+    return await response.json();
   }
 
 export async function loginUser(email, password) {
@@ -42,5 +43,21 @@ export async function loginUser(email, password) {
         body: JSON.stringify(json),
       })
       
-      return response.json();
+      return await response.json();
+}
+
+
+export async function deleteUser() {
+    const userToken = await AsyncStorage.getItem('user-token');
+    const auth = `Bearer ${userToken}`
+
+    const url = `${process.env.EXPO_PUBLIC_BASE_URL}/users`;
+    const response = await fetch(url, {
+      method: "DELETE",
+      headers: {
+        Authorization: auth,
+      },
+    })
+      
+    return null;
 }

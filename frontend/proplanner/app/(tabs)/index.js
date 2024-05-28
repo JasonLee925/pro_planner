@@ -6,45 +6,25 @@ import { Ionicons } from "@expo/vector-icons";
 import { EisenhowerMatrix } from "../../components/Matrix";
 import Toast from "react-native-toast-message";
 import { searchMatrixes, getlatestMatrix, getMatrixById, createMatrix, updateMatrix, updateMatrixDetails } from "../../api/matrix";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function HomeScreen() {
-  // const data = [
-  //   { label: "Current", value: 10 },
-  //   { label: "Item 2", value: 1 },
-  //   { label: "Item 3", value: 2 },
-  //   { label: "Item 4", value: 3 },
-  //   { label: "Item 5", value: 4 },
-  //   { label: "Item 6", value: 5 },
-  //   { label: "Item 7", value: 6 },
-  //   { label: "Item 8", value: 7 },
-  // ];
-
-  // const dataDetails = [
-  //   {
-  //     id: 10,
-  //     do: "dooo",
-  //     schedule: "scheduleeeee",
-  //     delegate: "delegateeee",
-  //     delete: "deleteeee",
-  //   },
-  //   { id: 1, do: "@", schedule: "@", delegate: "@", delete: "@" },
-  //   { id: 2, do: "-", schedule: "-", delegate: "-", delete: "-" },
-  // ];
 
   const [matrix, setMatrix] = useState(null);
   const [matrixes, setMatrixes] = useState([]); // data
   const [matrixDetails, setMatrixDetails] = useState(null);
-  const [loadedMatrixes, setLoadedMatrixes] = useState([]); // make sure "Current" is inclduded initially
+  const [loadedMatrixesDetails, setLoadedMatrixesDetails] = useState([]); 
   const [isSave, setSave] = useState(false);
+  const [dropdownFocus, setDropdownFocus] = useState(false);
 
   useEffect(() => {
     (async () => {
-      await init()
+      await init(await getSettings())
     })()
   }, [])
 
-  async function init() {
-    results = await searchMatrixes(); //TODO: setting options
+  async function init(settings=null) {
+    results = await searchMatrixes(settings); 
 
     const data = []
     for (i =0 ; i < results.matrix.length; i++) {
@@ -63,6 +43,27 @@ export default function HomeScreen() {
 
   useEffect(() => {
     (async () => {
+      if (!dropdownFocus) return
+      const settings = await getSettings()
+      if (settings) await init(settings)
+    })()
+  }, [dropdownFocus])
+
+  async function getSettings() {
+    let json = await AsyncStorage.getItem('matrix-settings');
+    const settings = json != null ? JSON.parse(json) : null;
+
+    if (settings === null) return null
+    if (settings.changed == 0) return null
+
+    const modified = { ...settings, changed: 0}
+    json = JSON.stringify(modified);
+    await AsyncStorage.setItem('matrix-settings', json);  
+    return modified
+  }
+
+  useEffect(() => {
+    (async () => {
       if (matrix === null) 
         return
       await reloadMatrixDetails();
@@ -71,7 +72,7 @@ export default function HomeScreen() {
 
   async function reloadMatrixDetails() {
     let md = null;
-    for (const _md of loadedMatrixes) {
+    for (const _md of loadedMatrixesDetails) {
       if (_md.id == matrix.value) {
         md = _md;
         break;
@@ -92,7 +93,7 @@ export default function HomeScreen() {
   const onSave = async(data) => {
     try {
       setMatrixDetails({ ...data });
-      setLoadedMatrixes((md) =>{
+      setLoadedMatrixesDetails((md) =>{
           return md.map((item) => (item.id === matrix.value ? { ...item, ...data } : item))
         }
       );
@@ -119,7 +120,7 @@ export default function HomeScreen() {
       // 1. create 
       await createMatrix()
       // 2. initialise
-      await init()
+      await init(await getSettings())
     } catch (error) {
       console.log(error) //TODO: toast
     }
@@ -127,7 +128,7 @@ export default function HomeScreen() {
 
   async function handleArchive() {
     result = await updateMatrix(matrix.value, archive=1)
-    await init()
+    await init(await getSettings())
   }
 
   return (
@@ -139,8 +140,11 @@ export default function HomeScreen() {
           labelField="label"
           valueField="value"
           value={matrix}
+          onFocus={() => setDropdownFocus(true)}
+          onBlur={() => setDropdownFocus(false)}
           onChange={(selectedMatrix) => {
             setMatrix(selectedMatrix);
+            setDropdownFocus(false);
           }}
         />
 

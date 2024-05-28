@@ -27,9 +27,9 @@ router.post("/register", async(req, res) => {
 
     const saltRounds = 10;
     const hash = bcrypt.hashSync(password, saltRounds);
-    await req.db.from("users").insert({ email, hash });
+    const result = await req.db.from("users").insert({ email, hash });
 
-    res.status(201).json({ error: false, message: "user created" });
+    res.status(201).json({ id: result[0] });
 }) 
 
 router.post("/login", async (req, res) => {
@@ -48,7 +48,7 @@ router.post("/login", async (req, res) => {
   const queryUsers = await req.db.from("users").select("*").where("email", "=", email)
 
   if(queryUsers.length == 0){
-    return res.status(401).json({error: false, message:"user does not exist"});
+    return res.status(401).json({error: true, message:"user does not exist"});
   }
 
   const user = queryUsers[0];
@@ -65,7 +65,34 @@ router.post("/login", async (req, res) => {
   res.json({token_type: "Bearer", token, expires_in})
 })
 
- 
+router.delete("/", authorise, async(req, res) => {
+  const user_id = req.token.userId;
+  if (user_id === null) {
+      return res.status(400).json({error: true, message: "invalid token: user id not found"})
+  }
+
+  const tx = await req.db.transaction();
+
+  try {
+    let result = await tx('matrixes').select("id").where("user_id", "=", user_id)
+    const ownedMatrixes = result.map(x => x.id)
+
+    result = await tx('matrix_details').where("id", "in", ownedMatrixes).del();
+
+    result = await tx('matrixes').where("id", "in", ownedMatrixes).del();
+
+    result = await tx('users').where("id", "=", user_id).del();
+
+    await tx.commit();
+    res.json();
+  } catch (error) {
+    await tx.rollback();
+    res.status(500).json({error:true, message: error})
+  } 
+
+}) 
+
+
 router.post("/varifyToken", authorise, (req, res) => {
   res.json({valid: true})
 })

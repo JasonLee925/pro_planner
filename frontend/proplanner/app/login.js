@@ -11,6 +11,8 @@ import {
 import { ThemedText } from "@/components/ThemedText";
 import {registerUser, loginUser} from "../api/user"
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { createMatrix } from "@/api/matrix";
+import Toast from 'react-native-toast-message';
 
 export function LoginScreen({ onLogin }) {
   const [email, setEmail] = useState("");
@@ -27,7 +29,14 @@ export function LoginScreen({ onLogin }) {
   const handleLogin = async () => {
     data = await loginUser(email, password);
     if (data.error === true) {
-        Alert.alert("Fail at login🤔", data.message);
+        Toast.show({
+            type: "error",
+            text1: "Fail at login🤔",
+            text2: data.message,
+            autoHide: true,
+            visibilityTime: 1500,
+            position: "bottom",
+        });
         return;
     }
     await AsyncStorage.setItem('user-token', data.token);
@@ -36,29 +45,60 @@ export function LoginScreen({ onLogin }) {
 
   const handleRegister = async () => {
     if (email == "" || password == "" || confirmPassword == "") {
-      Alert.alert("Email or passwords cannot be empty.");
+      Toast.show({
+        type: "error",
+        text1: "Email or passwords cannot be empty. ❌",
+        autoHide: true,
+        visibilityTime: 1500,
+        position: "bottom",
+    });
       return;
     }
-    if (password != confirmPassword) {
-      Alert.alert("The entered passwords don't match.");
-      return;
-    }
+
     let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/;
     if (reg.test(email) === false) {
-      Alert.alert("The entered email is invalid.");
+      Toast.show({
+          type: "error",
+          text1: "The entered email is invalid! ❌",
+          autoHide: true,
+          visibilityTime: 1500,
+          position: "bottom",
+      });
+      return;
+    }
+
+    if (password != confirmPassword) {
+      Toast.show({
+          type: "error",
+          text1: "The entered passwords don't match. ❌",
+          autoHide: true,
+          visibilityTime: 1500,
+          position: "bottom",
+      });
       return;
     }
 
     data = await registerUser(email, password)
     if (data.error === true) {
-            Alert.alert("Something went wrong 😣", data.message);
-            return;
+      Toast.show({
+          type: "error",
+          text1: "Something went wrong. ❌",
+          text2: data.message,
+          autoHide: true,
+          visibilityTime: 1500,
+          position: "bottom",
+      });
+      return;
     }
+
 
     Alert.alert("Welcome! 🥳", "You have successfully signed up.", [
       {
         text: "OK",
-        onPress: () => handleLogin(),
+        onPress: async() => {
+          await handleLogin()
+          await createMatrix()
+        },
       },
     ]);
   };

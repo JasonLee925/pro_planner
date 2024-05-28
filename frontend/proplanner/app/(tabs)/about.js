@@ -22,7 +22,7 @@ export default function TabThreeScreen() {
       }
     >
       <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">About</ThemedText>
+        <ThemedText type="title">About 📖</ThemedText>
       </ThemedView>
       <ThemedText>
         This app adopts the Eisenhower Matrix to help you plan your life.
