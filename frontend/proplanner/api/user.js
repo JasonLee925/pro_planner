@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { USER_TOKEN } from "@/constants/AsyncStorage"
 
 export async function verifyToken(userToken) {
   const auth = `Bearer ${userToken}`
@@ -48,7 +49,7 @@ export async function loginUser(email, password) {
 
 
 export async function deleteUser() {
-    const userToken = await AsyncStorage.getItem('user-token');
+    const userToken = await AsyncStorage.getItem(USER_TOKEN);
     const auth = `Bearer ${userToken}`
 
     const url = `${process.env.EXPO_PUBLIC_BASE_URL}/users`;

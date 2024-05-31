@@ -8,6 +8,7 @@ import { GlobalLayout } from "../../components/Layout"
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { deleteUser } from "@/api/user"
 import {useLoggedInState} from "@/context/loggedInContext"
+import { USER_TOKEN, MATRIX_SETTINGS } from "@/constants/AsyncStorage"
 
 export default function TabSettingScreen() {
   const {isLoggedIn, setIsLoggedIn} = useLoggedInState();
@@ -16,7 +17,7 @@ export default function TabSettingScreen() {
 
   useEffect(()=> {
     (async ()=> {
-      const json = await AsyncStorage.getItem('matrix-settings');
+      const json = await AsyncStorage.getItem(MATRIX_SETTINGS);
       const settings = json != null ? JSON.parse(json) : null;  
       if (settings) {   
         setMatrixArchived(settings.archived ? true:false);
@@ -34,7 +35,7 @@ export default function TabSettingScreen() {
       }
   
       let json = JSON.stringify(settings);
-      await AsyncStorage.setItem('matrix-settings', json);      
+      await AsyncStorage.setItem(MATRIX_SETTINGS, json);      
     })()
   }, [isMatrixArchived, selectedMatrisLimit])
 
@@ -110,8 +111,8 @@ export default function TabSettingScreen() {
       },
       {text: 'OK', onPress: () => {
         setIsLoggedIn(false) // logout
-        AsyncStorage.removeItem('matrix-settings');      
-        AsyncStorage.removeItem('user-token');
+        AsyncStorage.removeItem(MATRIX_SETTINGS);      
+        AsyncStorage.removeItem(USER_TOKEN);
       }},
     ]);
   };
@@ -133,8 +134,8 @@ export default function TabSettingScreen() {
         setIsLoggedIn(false) // logout
         deleteUser()
 
-        AsyncStorage.removeItem('matrix-settings');      
-        AsyncStorage.removeItem('user-token');
+        AsyncStorage.removeItem(MATRIX_SETTINGS);      
+        AsyncStorage.removeItem(USER_TOKEN);
       }},
     
     ]);
