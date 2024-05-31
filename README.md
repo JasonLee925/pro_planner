@@ -2,6 +2,9 @@
 
 This mobile app aims at resolving procrastination. It helps people to plan their daily tasks using [Eisenhower Matrix](https://asana.com/resources/eisenhower-matrix) (or Priority Matrix).
 
+<img src="/frontend/proplanner/assets/images/Plan_page.jpeg" alt="drawing" width="25%"/>
+
+
 # Features ✨
 *The data are stored in local storage using **AsyncStorage API**.
 
