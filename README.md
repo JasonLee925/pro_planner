@@ -27,18 +27,67 @@ This mobile app aims at resolving procrastination. It helps people to plan their
 
 ### Dependencies
 
-To check out the dependencies that are used in this project, kindly refer to [package.json](package.json).
+- Backend:
+    ```
+    "dependencies": {
+        "bcrypt": "^5.1.1",
+        "cookie-parser": "~1.4.4",
+        "debug": "~2.6.9",
+        "dotenv": "^16.4.5",
+        "express": "~4.16.1",
+        "http-errors": "~1.6.3",
+        "jade": "~1.11.0",
+        "jsonwebtoken": "^9.0.2",
+        "knex": "^3.1.0",
+        "morgan": "~1.9.1",
+        "mysql2": "^3.9.7",
+        "nodemon": "^3.1.0"
+    }
+    ```
+- Frontend:
+    ```
+    "dependencies": {
+        "@expo/vector-icons": "^14.0.0",
+        "@react-native-async-storage/async-storage": "1.23.1",
+        "@react-navigation/bottom-tabs": "^6.5.20",
+        "@react-navigation/native": "^6.1.17",
+        "expo": "~51.0.2",
+        "expo-constants": "~16.0.1",
+        "expo-font": "~12.0.4",
+        "expo-linking": "~6.3.1",
+        "expo-router": "~3.5.11",
+        "expo-splash-screen": "~0.27.4",
+        "expo-status-bar": "~1.12.1",
+        "expo-system-ui": "~3.0.4",
+        "expo-web-browser": "~13.0.3",
+        "react": "18.2.0",
+        "react-dom": "18.2.0",
+        "react-native": "0.74.1",
+        "react-native-element-dropdown": "^2.12.0",
+        "react-native-gesture-handler": "~2.16.1",
+        "react-native-reanimated": "~3.10.1",
+        "react-native-safe-area-context": "4.10.1",
+        "react-native-screens": "3.31.1",
+        "react-native-toast-message": "^2.2.0",
+        "react-native-web": "~0.19.10"
+    }
+    ```
 
 ### How to install dependencies?
 
 1. Open a terminal (or command line in Windows OS)
 1. Change directory to the project folder
 
-   ```shell
-   cd portfolio_react-main/
-   ```
+    - Backend:
+        ```shell
+        cd backend/proplanner/
+        ```
+    - Frontend:
+        ```shell
+        cd backend/proplanner/
+        ```
 
-1. Install dependencies
+1. Install dependencies in both folders respectively
 
    ```shell
    npm install
