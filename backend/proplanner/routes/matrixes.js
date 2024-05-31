@@ -1,6 +1,6 @@
 var express = require("express");
 var router = express.Router();
-const authorise = require("../auth");
+const authorise = require("./auth");
 
 /* Search matrixes. This is will NOT return `details`. */
 router.get("/search", authorise, async (req, res) => {
