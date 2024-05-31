@@ -1,5 +1,5 @@
-import Ionicons from "@expo/vector-icons/Ionicons";
-import { StyleSheet, Image, Platform } from "react-native";
+import React, { useState, useEffect } from "react";
+import { StyleSheet, Image, FlatList } from "react-native";
 import { GlobalLayout } from "../../components/Layout";
 
 import { Collapsible } from "@/components/Collapsible";
@@ -9,6 +9,28 @@ import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 
 export default function TabThreeScreen() {
+  const [licensesList, setLicensesList] = useState([]);
+  
+  useEffect(() => {
+    const fetchLicenses = async () => {
+      try {
+        const json = require('../../assets/licenses.json');
+        // const json = await response.json();
+        
+        const formattedList = Object.entries(json).map(([key, value]) => {
+          return `${key} - License: ${value.licenses}`;
+        });
+
+        setLicensesList(formattedList);   
+      } catch (error) {
+        console.error('Error fetching JSON:', error);
+      }
+    };
+
+    fetchLicenses();
+  }, []);
+
+
   return (
     <GlobalLayout >
 
@@ -88,6 +110,16 @@ export default function TabThreeScreen() {
         <ExternalLink href="https://en.wikipedia.org/wiki/Priority_Matrix">
           <ThemedText type="link">Learn more</ThemedText>
         </ExternalLink>
+      </Collapsible>
+      <Collapsible title="Open source licenses">
+        {/* <FlatList
+          data={licensesList}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={({ item }) => <ThemedText >{item}</ThemedText>}
+        /> */}
+        {licensesList.map((item, index) => (
+          <ThemedText key={index} style={styles.item}>- {item}</ThemedText>
+        ))}
       </Collapsible>
     </ParallaxScrollView>
     </GlobalLayout >

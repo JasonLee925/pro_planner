@@ -8,6 +8,7 @@ import { Colors } from '@/constants/Colors';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {verifyToken} from '@/api/user'
 import { LoginScreen } from "../login"
+import { USER_TOKEN } from "@/constants/AsyncStorage"
 
 
 export default function TabLayout() {
@@ -18,7 +19,7 @@ export default function TabLayout() {
   useEffect(() => {
     (async ()=> {
       // parse token from the async storage (for auto login) && check token's validality
-      const token = await AsyncStorage.getItem('user-token');
+      const token = await AsyncStorage.getItem(USER_TOKEN);
       const result = await verifyToken(token)
       setIsLoggedIn(!result.error)
       // setIsLoggedIn(false)

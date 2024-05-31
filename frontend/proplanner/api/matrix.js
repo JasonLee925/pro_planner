@@ -1,8 +1,9 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { USER_TOKEN } from "@/constants/AsyncStorage"
 
 
 export async function searchMatrixes(settings=null) {
-    const userToken = await AsyncStorage.getItem('user-token');
+    const userToken = await AsyncStorage.getItem(USER_TOKEN);
     const auth = `Bearer ${userToken}`
 
     let params = {limit: 5, archived: 0} // default
@@ -32,7 +33,7 @@ export async function searchMatrixes(settings=null) {
 }
 
 export async function getlatestMatrix(isDetails=1) {
-    const userToken = await AsyncStorage.getItem('user-token');
+    const userToken = await AsyncStorage.getItem(USER_TOKEN);
     const auth = `Bearer ${userToken}`
 
     const params = {details: isDetails}
@@ -55,7 +56,7 @@ export async function getlatestMatrix(isDetails=1) {
 
 
 export async function getMatrixById(id, isDetails=1) {
-    const userToken = await AsyncStorage.getItem('user-token');
+    const userToken = await AsyncStorage.getItem(USER_TOKEN);
     const auth = `Bearer ${userToken}`
 
     const params = {details: isDetails}
@@ -78,7 +79,7 @@ export async function getMatrixById(id, isDetails=1) {
 
 
 export async function createMatrix( doText=null, scheduleText=null, delegateText=null, deleteText=null) {
-    const userToken = await AsyncStorage.getItem('user-token');
+    const userToken = await AsyncStorage.getItem(USER_TOKEN);
     const auth = `Bearer ${userToken}`
 
     const url = `${process.env.EXPO_PUBLIC_BASE_URL}/matrixes`;
@@ -104,7 +105,7 @@ export async function createMatrix( doText=null, scheduleText=null, delegateText
 }
 
 export async function updateMatrix( id, archive=0 ) {
-    const userToken = await AsyncStorage.getItem('user-token');
+    const userToken = await AsyncStorage.getItem(USER_TOKEN);
     const auth = `Bearer ${userToken}`
 
     const queryString = new URLSearchParams({archive}).toString();
@@ -123,7 +124,7 @@ export async function updateMatrix( id, archive=0 ) {
 }
 
 export async function updateMatrixDetails( id, doText=null, scheduleText=null, delegateText=null, deleteText=null) {
-    const userToken = await AsyncStorage.getItem('user-token');
+    const userToken = await AsyncStorage.getItem(USER_TOKEN);
     const auth = `Bearer ${userToken}`
 
     const url = `${process.env.EXPO_PUBLIC_BASE_URL}/matrixes/${id}/details`;

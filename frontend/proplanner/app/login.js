@@ -13,6 +13,7 @@ import {registerUser, loginUser} from "../api/user"
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createMatrix } from "@/api/matrix";
 import Toast from 'react-native-toast-message';
+import { USER_TOKEN } from "@/constants/AsyncStorage"
 
 export function LoginScreen({ onLogin }) {
   const [email, setEmail] = useState("");
@@ -39,7 +40,7 @@ export function LoginScreen({ onLogin }) {
         });
         return;
     }
-    await AsyncStorage.setItem('user-token', data.token);
+    await AsyncStorage.setItem(USER_TOKEN, data.token);
     onLogin();
   };
 

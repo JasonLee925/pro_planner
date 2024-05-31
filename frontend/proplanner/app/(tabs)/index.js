@@ -7,6 +7,7 @@ import { EisenhowerMatrix } from "../../components/Matrix";
 import Toast from "react-native-toast-message";
 import { searchMatrixes, getlatestMatrix, getMatrixById, createMatrix, updateMatrix, updateMatrixDetails } from "../../api/matrix";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { MATRIX_SETTINGS } from "@/constants/AsyncStorage"
 
 export default function HomeScreen() {
 
@@ -50,7 +51,7 @@ export default function HomeScreen() {
   }, [dropdownFocus])
 
   async function getSettings() {
-    let json = await AsyncStorage.getItem('matrix-settings');
+    let json = await AsyncStorage.getItem(MATRIX_SETTINGS);
     const settings = json != null ? JSON.parse(json) : null;
 
     if (settings === null) return null
@@ -58,7 +59,7 @@ export default function HomeScreen() {
 
     const modified = { ...settings, changed: 0}
     json = JSON.stringify(modified);
-    await AsyncStorage.setItem('matrix-settings', json);  
+    await AsyncStorage.setItem(MATRIX_SETTINGS, json);  
     return modified
   }
 
