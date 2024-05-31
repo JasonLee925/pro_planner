@@ -7,11 +7,35 @@ const authorise = require('./auth')
 
 const secretKey = process.env.SECRET_KEY; 
 
-/* GET users listing. */
-router.get('/', function(req, res, next) {
-  res.send('respond with a resource');
-});
+/**
+ * @swagger
+ * tags:
+ *   name: Users
+ *   description: Example operations
+ */
 
+/**
+ * @swagger
+ * /register:
+ *   post:
+ *     summary: Create User Account 
+ *     description: Create a user account
+ *     tags: [Users]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Successful response
+ */
 router.post("/register", async(req, res) => {
     const email = req.body.email;
     const password = req.body.password;
@@ -32,6 +56,28 @@ router.post("/register", async(req, res) => {
     res.status(201).json({ id: result[0] });
 }) 
 
+/**
+ * @swagger
+ * /login:
+ *   post:
+ *     summary: User Login
+ *     description: user login
+ *     tags: [Users]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Successful response
+ */
 router.post("/login", async (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
@@ -65,6 +111,18 @@ router.post("/login", async (req, res) => {
   res.json({token_type: "Bearer", token, expires_in})
 })
 
+
+/**
+ * @swagger
+ * /:
+ *   delete:
+ *     summary: Delete User Account 
+ *     description: Delete a user account.
+ *     tags: [Users]
+ *     responses:
+ *       200:
+ *         description: Successful response
+ */
 router.delete("/", authorise, async(req, res) => {
   const user_id = req.token.userId;
   if (user_id === null) {
@@ -92,8 +150,18 @@ router.delete("/", authorise, async(req, res) => {
 
 }) 
 
-
-router.post("/varifyToken", authorise, (req, res) => {
+/**
+ * @swagger
+ * /varifyToken:
+ *   get:
+ *     summary: Varify Token
+ *     description: Varify token
+ *     tags: [Users]
+ *     responses:
+ *       200:
+ *         description: Successful response
+ */
+router.get("/varifyToken", authorise, (req, res) => {
   res.json({valid: true})
 })
 

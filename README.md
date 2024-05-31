@@ -41,7 +41,9 @@ This mobile app aims at resolving procrastination. It helps people to plan their
         "knex": "^3.1.0",
         "morgan": "~1.9.1",
         "mysql2": "^3.9.7",
-        "nodemon": "^3.1.0"
+        "nodemon": "^3.1.0",
+        "swagger-jsdoc": "^6.2.8",
+        "swagger-ui-express": "^5.0.0"
     }
     ```
 - Frontend:

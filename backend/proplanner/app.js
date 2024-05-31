@@ -5,6 +5,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const options=require("./db")
 const knex = require("knex")(options)
+const { swaggerUi, swaggerSpec } = require('./docs/swagger');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -27,6 +28,7 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/matrixes', matrixesRouter);

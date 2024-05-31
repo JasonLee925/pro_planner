@@ -2,7 +2,35 @@ var express = require("express");
 var router = express.Router();
 const authorise = require("./auth");
 
-/* Search matrixes. This is will NOT return `details`. */
+
+/**
+ * @swagger
+ * tags:
+ *   name: Matrixes
+ *   description: Example operations
+ */
+
+/**
+ * @swagger
+ * /search:
+ *   get:
+ *     summary: Search matrixes
+ *     description: Search matrixes. This is will NOT return `details`.
+ *     tags: [Matrixes]
+ *     parameters:
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *       - in: query
+ *         name: archived
+ *         schema:
+ *           type: integer
+ *         description: 0 (exclude archived matrixes) or 1 (include archived matrixes)
+ *     responses:
+ *       200:
+ *         description: Successful response
+ */
 router.get("/search", authorise, async (req, res) => {
     const limit = req.query.limit ? req.query.limit : 10;
     const archived = req.query.archived 
@@ -23,7 +51,23 @@ router.get("/search", authorise, async (req, res) => {
     }
 });
 
-/* Get the latest matrix. */
+/**
+ * @swagger
+ * /latest:
+ *   get:
+ *     summary: Get Latest Matrix
+ *     description: Get the latest matrix
+ *     tags: [Matrixes]
+ *     parameters:
+ *       - in: query
+ *         name: details
+ *         schema:
+ *           type: integer
+ *         description: 0 (without details) or 1 (with details)
+ *     responses:
+ *       200:
+ *         description: Successful response
+ */
 router.get("/latest", authorise, async (req, res) => {
     const isDetails = req.query.details == 1;
     const user_id = req.token.userId;
@@ -44,7 +88,24 @@ router.get("/latest", authorise, async (req, res) => {
     res.json({ matrix, details });
 });
 
-/* Get matrix by id. */
+/**
+ * @swagger
+ * /:id:
+ *   get:
+ *     summary: Get A Matrix 
+ *     description: Get matrix by id.
+ *     tags: [Matrixes]
+*     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: matrix id
+ *     responses:
+ *       200:
+ *         description: Successful response
+ */
 router.get("/:id", authorise, async (req, res) => {
     const id = req.params.id;
     const isDetails = req.query.details == 1;
@@ -61,7 +122,32 @@ router.get("/:id", authorise, async (req, res) => {
     res.json({ matrix, details });
 });
 
-/* Create a matrix. */
+/**
+ * @swagger
+ * /:
+ *   post:
+ *     summary: Create A Matrix 
+ *     description: Create a matrix
+ *     tags: [Matrixes]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               do:
+ *                 type: string
+ *               schedule:
+ *                 type: string
+ *               delegate:
+ *                 type: string
+ *               delete:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Successful response
+ */
 router.post("/", authorise, async (req, res) => {
     const tx = await req.db.transaction();
     const user_id = req.token.userId;
@@ -94,7 +180,24 @@ router.post("/", authorise, async (req, res) => {
 
 });
 
-/* Update a matrix. */
+/**
+ * @swagger
+ * /:id:
+ *   put:
+ *     summary: Update A Matrix 
+ *     description: Get matrix by id.
+ *     tags: [Matrixes]
+*     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: matrix id
+ *     responses:
+ *       200:
+ *         description: Successful response
+ */
 router.put("/:id", authorise, async (req, res) => { 
     const id = req.params.id;
     const archive = req.query.archive == 1? 1 : 0;
@@ -104,8 +207,39 @@ router.put("/:id", authorise, async (req, res) => {
     res.json({ data: result[0]})
 });
 
-
-/* Update a matrix's details. */
+/**
+ * @swagger
+ * /:id/details:
+ *   put:
+ *     summary: Update Matrix Detail 
+ *     description: Update a matrix's details.
+ *     tags: [Matrixes]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: matrix id
+*     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               do:
+ *                 type: string
+ *               schedule:
+ *                 type: string
+ *               delegate:
+ *                 type: string
+ *               delete:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Successful response
+ */
 router.put("/:id/details", authorise, async (req, res) => { 
     const id = req.params.id;
     
